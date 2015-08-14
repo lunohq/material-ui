@@ -148,16 +148,19 @@ class DatePickerPage extends React.Component {
         componentInfo={componentInfo}>
 
         <DatePicker
-          hintText="Portrait Dialog" />
+          hintText="Portrait Dialog"
+          disableYearSelection={this.state.disableYearSelection} />
 
         <DatePicker
           hintText="Landscape Dialog"
-          mode="landscape" />
+          mode="landscape"
+          disableYearSelection={this.state.disableYearSelection} />
 
         <DatePicker
           hintText="Controlled Date Input"
           value={this.state.controlledDate}
-          onChange={this._handleChange.bind(this)} />
+          onChange={this._handleChange.bind(this)}
+          disableYearSelection={this.state.disableYearSelection} />
 
         <DatePicker
           hintText="Ranged Date Picker"
@@ -182,6 +185,13 @@ class DatePickerPage extends React.Component {
             value="autoOk"
             label="Auto Accept"
             defaultToggled={this.state.autoOk}
+            onToggle={this._handleToggle.bind(this)} />
+
+          <Toggle
+            name="disableYearSelection"
+            value="disableYearSelection"
+            label="Disable Year Selection"
+            defaultToggled={this.state.disableYearSelection}
             onToggle={this._handleToggle.bind(this)} />
         </div>
       </ComponentDoc>
