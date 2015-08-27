@@ -29,7 +29,6 @@ const ListItem = React.createClass({
     initiallyOpen: React.PropTypes.bool,
     innerDivStyle: React.PropTypes.object,
     insetChildren: React.PropTypes.bool,
-    innerStyle: React.PropTypes.object,
     leftAvatar: React.PropTypes.element,
     leftCheckbox: React.PropTypes.element,
     leftIcon: React.PropTypes.element,
