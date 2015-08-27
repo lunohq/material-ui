@@ -50,7 +50,9 @@ const ListItem = React.createClass({
     rightIconButton: React.PropTypes.element,
     rightToggle: React.PropTypes.element,
     primaryText: React.PropTypes.node,
+    primaryTextStyle: React.PropTypes.object,
     secondaryText: React.PropTypes.node,
+    secondaryTextStyle: React.PropTypes.object,
     secondaryTextLines: React.PropTypes.oneOf([1, 2]),
   },
 
@@ -325,7 +327,7 @@ const ListItem = React.createClass({
 
     if (primaryText) {
       const secondaryTextElement = this._createTextElement(
-        styles.primaryText,
+        this.mergeAndPrefix(styles.primaryText, this.props.primaryTextStyle),
         primaryText,
         'primaryText'
       );
@@ -334,7 +336,7 @@ const ListItem = React.createClass({
 
     if (secondaryText) {
       const secondaryTextElement = this._createTextElement(
-        styles.secondaryText,
+        this.mergeAndPrefix(styles.secondaryText, this.props.secondaryTextStyle),
         secondaryText,
         'secondaryText'
       );
