@@ -38,6 +38,7 @@ const AppBar = React.createClass({
     iconElementRight: React.PropTypes.element,
     iconStyleRight: React.PropTypes.object,
     title: React.PropTypes.node,
+    titleStyle: React.PropTypes.object,
     zDepth: React.PropTypes.number,
   },
 
@@ -143,6 +144,7 @@ const AppBar = React.createClass({
       iconClassNameRight,
       className,
       style,
+      titleStyle,
       zDepth,
       children,
       ...other,
@@ -161,8 +163,8 @@ const AppBar = React.createClass({
       // If the title is a string, wrap in an h1 tag.
       // If not, just use it as a node.
       titleElement = typeof title === 'string' || title instanceof String ?
-        <h1 style={this.prepareStyles(styles.title, styles.mainElement)}>{title}</h1> :
-        <div style={this.prepareStyles(styles.mainElement)}>{title}</div>;
+        <h1 style={this.prepareStyles(styles.title, styles.mainElement, titleStyle)}>{title}</h1> :
+        <div style={this.prepareStyles(styles.mainElement, titleStyle)}>{title}</div>;
     }
 
     if (showMenuIconButton) {
