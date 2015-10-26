@@ -14,7 +14,7 @@ module.exports = {
         height: rawTheme.spacing.desktopKeylineIncrement,
       },
       appCanvas: {
-        backgroundColor: rawTheme.palette.canvasColor,
+        backgroundColor: rawTheme.palette.alternateTextColor,
       },
       avatar: {
         borderColor: 'rgba(0, 0, 0, 0.08)',
