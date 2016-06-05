@@ -53,7 +53,7 @@ function getStyles(props, context) {
     icon: {
       height: floatingActionButton.buttonSize,
       lineHeight: `${floatingActionButton.buttonSize}px`,
-      fill: floatingActionButton.iconColor,
+      fill: iconColor,
       color: iconColor,
     },
     iconWhenMini: {
@@ -88,7 +88,7 @@ class FloatingActionButton extends Component {
      */
     disabledColor: PropTypes.string,
     /**
-     * URL to link to when button clicked if `linkButton` is set to true.
+     * The URL to link to when the button is clicked.
      */
     href: PropTypes.string,
     /**
@@ -104,15 +104,11 @@ class FloatingActionButton extends Component {
      */
     iconStyle: PropTypes.object,
     /**
-     * Enables use of `href` property to provide a URL to link to if set to true.
-     */
-    linkButton: PropTypes.bool,
-    /**
      * If true, the button will be a small floating action button.
      */
     mini: PropTypes.bool,
     /**
-     * Callback function fired when a mouse button is pressed down on the elmeent.
+     * Callback function fired when a mouse button is pressed down on the element.
      *
      * @param {object} event `mousedown` event targeting the element.
      */

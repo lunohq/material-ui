@@ -49,7 +49,7 @@ function getStyles(props, context, state) {
 
     // This inner div is needed so that ripples will span the entire container
     innerDiv: {
-      marginLeft: nestedLevel * muiTheme.listItem.nestedLevelDepth,
+      marginLeft: nestedLevel * listItem.nestedLevelDepth,
       paddingLeft: leftIcon || leftAvatar || leftCheckbox || insetChildren ? 72 : 16,
       paddingRight: rightIcon || rightAvatar || rightIconButton ? 56 : rightToggle ? 72 : 16,
       paddingBottom: singleAvatar ? 20 : 16,
@@ -319,10 +319,11 @@ class ListItem extends Component {
     touch: false,
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
     return (
       !shallowEqual(this.props, nextProps) ||
-      !shallowEqual(this.state, nextState)
+      !shallowEqual(this.state, nextState) ||
+      !shallowEqual(this.context, nextContext)
     );
   }
 
@@ -640,10 +641,10 @@ class ListItem extends Component {
           hasCheckbox ? this.createLabelElement(styles, contentChildren, other) :
           disabled ? this.createDisabledElement(styles, contentChildren, other) : (
             <EnhancedButton
+              containerElement={'span'}
               {...other}
               disabled={disabled}
               disableKeyboardFocus={disableKeyboardFocus || this.state.rightIconButtonKeyboardFocused}
-              linkButton={true}
               onKeyboardFocus={this.handleKeyboardFocus}
               onMouseLeave={this.handleMouseLeave}
               onMouseEnter={this.handleMouseEnter}

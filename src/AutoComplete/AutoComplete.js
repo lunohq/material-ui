@@ -56,6 +56,16 @@ class AutoComplete extends Component {
      */
     dataSource: PropTypes.array.isRequired,
     /**
+     * Config for objects list dataSource.
+     *
+     * @typedef {Object} dataSourceConfig
+     *
+     * @property {string} text `dataSource` element key used to find a string to be matched for search
+     * and shown as a `TextField` input value after choosing the result.
+     * @property {string} value `dataSource` element key used to find a string to be shown in search results.
+     */
+    dataSourceConfig: PropTypes.object,
+    /**
      * Disables focus ripple when true.
      */
     disableFocusRipple: PropTypes.bool,
@@ -141,6 +151,13 @@ class AutoComplete extends Component {
      */
     onUpdateInput: PropTypes.func,
     /**
+     * This function is called to retrieve the text from the `chosenRequest` and should return a string.
+     * By default, if the `chosenRequest` is a string, that will be used.
+     * Otherwise the key specified in `dataSourceConfig.text` will be returned
+     * for the `chosenRequest`.
+     */
+    chosenRequestText: PropTypes.func,
+    /**
      * Auto complete menu is open if true.
      */
     open: PropTypes.bool,
@@ -172,6 +189,10 @@ class AutoComplete extends Component {
       horizontal: 'left',
     },
     animated: true,
+    dataSourceConfig: {
+      text: 'text',
+      value: 'value',
+    },
     disableFocusRipple: true,
     filter: (searchText, key) => searchText !== '' && key.indexOf(searchText) !== -1,
     fullWidth: false,
@@ -258,7 +279,7 @@ class AutoComplete extends Component {
 
     const index = parseInt(child.key, 10);
     const chosenRequest = dataSource[index];
-    const searchText = typeof chosenRequest === 'string' ? chosenRequest : chosenRequest.text;
+    const searchText = this.chosenRequestText(chosenRequest);
 
     this.props.onNewRequest(chosenRequest, index);
 
@@ -269,6 +290,16 @@ class AutoComplete extends Component {
       this.close();
       this.timerTouchTapCloseId = null;
     }, this.props.menuCloseDelay);
+  };
+
+  chosenRequestText = (chosenRequest) => {
+    if (typeof this.props.chosenRequestText === 'function') {
+      return this.props.chosenRequestText(chosenRequest)
+    } else if (typeof chosenRequest === 'string') {
+      return chosenRequest;
+    } else {
+      return chosenRequest[this.props.dataSourceConfig.text];
+    }
   };
 
   handleEscKeyDown = () => {
@@ -366,6 +397,7 @@ class AutoComplete extends Component {
       errorStyle,
       floatingLabelText,
       hintText,
+      filter,
       fullWidth,
       menuStyle,
       menuProps,
@@ -394,7 +426,7 @@ class AutoComplete extends Component {
     dataSource.every((item, index) => {
       switch (typeof item) {
         case 'string':
-          if (this.props.filter(searchText, item, item)) {
+          if (filter(searchText, item, item)) {
             requestsList.push({
               text: item,
               value: (
@@ -410,29 +442,31 @@ class AutoComplete extends Component {
           break;
 
         case 'object':
-          if (item && typeof item.text === 'string') {
-            if (this.props.filter(searchText, item.text, item)) {
-              if (item.value.type && (item.value.type.muiName === MenuItem.muiName ||
-                 item.value.type.muiName === Divider.muiName)) {
-                requestsList.push({
-                  text: item.text,
-                  value: React.cloneElement(item.value, {
-                    key: index,
-                    disableFocusRipple: this.props.disableFocusRipple,
-                  }),
-                });
-              } else {
-                requestsList.push({
-                  text: item.text,
-                  value: (
-                    <MenuItem
-                      innerDivStyle={styles.innerDiv}
-                      primaryText={item.value}
-                      disableFocusRipple={disableFocusRipple}
-                      key={index}
-                    />),
-                });
-              }
+          if (item && typeof item[this.props.dataSourceConfig.text] === 'string') {
+            const itemText = item[this.props.dataSourceConfig.text];
+            if (!this.props.filter(searchText, itemText, item)) break;
+
+            const itemValue = item[this.props.dataSourceConfig.value];
+            if (itemValue.type && (itemValue.type.muiName === MenuItem.muiName ||
+               itemValue.type.muiName === Divider.muiName)) {
+              requestsList.push({
+                text: itemText,
+                value: React.cloneElement(itemValue, {
+                  key: index,
+                  disableFocusRipple: disableFocusRipple,
+                }),
+              });
+            } else {
+              requestsList.push({
+                text: itemText,
+                value: (
+                  <MenuItem
+                    innerDivStyle={styles.innerDiv}
+                    primaryText={itemValue}
+                    disableFocusRipple={disableFocusRipple}
+                    key={index}
+                  />),
+              });
             }
           }
           break;
@@ -453,7 +487,7 @@ class AutoComplete extends Component {
         autoWidth={false}
         disableAutoFocus={focusTextField}
         onEscKeyDown={this.handleEscKeyDown}
-        initiallyKeyboardFocused={false}
+        initiallyKeyboardFocused={true}
         onItemTouchTap={this.handleItemTouchTap}
         onMouseDown={this.handleMouseDown}
         style={Object.assign(styles.menu, menuStyle)}
@@ -539,14 +573,17 @@ AutoComplete.levenshteinDistanceFilter = (distanceLessThan) => {
 };
 
 AutoComplete.fuzzyFilter = (searchText, key) => {
-  if (searchText.length === 0) {
-    return false;
+  const compareString = key.toLowerCase();
+  searchText = searchText.toLowerCase();
+
+  let searchTextIndex = 0;
+  for (let index = 0; index < key.length; index++) {
+    if (compareString[index] === searchText[searchTextIndex]) {
+      searchTextIndex += 1;
+    }
   }
 
-  const subMatchKey = key.substring(0, searchText.length);
-  const distance = AutoComplete.levenshteinDistance(searchText.toLowerCase(), subMatchKey.toLowerCase());
-
-  return searchText.length > 3 ? distance < 2 : distance === 0;
+  return searchTextIndex === searchText.length;
 };
 
 AutoComplete.Item = MenuItem;
